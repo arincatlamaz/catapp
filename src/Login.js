@@ -1,7 +1,8 @@
 // Login.js
 import { useState } from "react";
 import { supabase } from "./supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function Login() {
 
   const login = async (e) => {
     e.preventDefault();
-    const { user, error } = await supabase.auth.signIn({
+    const { error } = await supabase.auth.signIn({
       email,
       password,
     });
@@ -24,25 +25,36 @@ export default function Login() {
     }
   };
 
+  // const signupClick = async (e) => {
+  //   navigate("/signup");
+  // }
+
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={login}>
+    <div className="login-container">
+      <h2 className="login-title">Login</h2>
+      <form onSubmit={login} className="login-form">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="login-input"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="login-input"
         />
-        <button type="submit">Login</button>
+        <button type="submit" className="login-button">
+          Login
+        </button>
       </form>
-      {loginError && <p style={{ color: "red" }}>{loginError}</p>}
+      {loginError && <p className="error-message">{loginError}</p>}
+      <p className="signup-or">
+        Don't have an account? <Link to="/">Sign up</Link>
+      </p>
     </div>
   );
 }

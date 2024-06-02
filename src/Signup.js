@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
+import './Signup.css';
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -35,25 +36,28 @@ export default function Signup() {
   }, [signupSuccess, navigate]);
 
   return (
-    <div>
-      <h2>Signup</h2>
-      <form onSubmit={signup}>
+    <div className="signup-container">
+      <h2 className="signup-title">Signup</h2>
+      <form onSubmit={signup} className="signup-form">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="signup-input"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="signup-input"
         />
-        <button type="submit">Signup</button>
+        <button type="submit" className="signup-button">Signup</button>
       </form>
-      {signupError && <p style={{ color: "red" }}>{signupError}</p>}
-      {signupSuccess && <p style={{ color: "green" }}>Registered successfully!</p>}
+      {signupError && <p className="error-message">{signupError}</p>}
+      {signupSuccess && <p className="success-message">Registered successfully!</p>}
+      <button onClick={() => navigate("/login")} className="login-button">Go to Login</button>
     </div>
   );
 }
