@@ -1,4 +1,3 @@
-// Signup.js
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
@@ -7,12 +6,19 @@ import './Signup.css';
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [signupError, setSignupError] = useState(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
   const navigate = useNavigate();
 
   const signup = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setSignupError("Passwords do not match");
+      setSignupSuccess(false);
+      return;
+    }
+
     const { user, error } = await supabase.auth.signUp({
       email,
       password,
@@ -51,6 +57,13 @@ export default function Signup() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="signup-input"
+        />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className="signup-input"
         />
         <button type="submit" className="signup-button">Signup</button>
