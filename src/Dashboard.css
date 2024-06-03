@@ -1,38 +1,68 @@
 .dashboard-container {
-    max-width: 600px;
-    margin: 140px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-    text-align: center;
-  }
-  
-  .dashboard-title {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .welcome-message {
-    font-size: 18px;
-    margin-bottom: 30px;
-  }
-  
-  .logout-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #dc3545;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .logout-button:hover {
-    background-color: #c82333;
-  }
-  
+  max-width: 600px;
+  margin: 140px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  text-align: center;
+  position: relative;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.welcome-message {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.fetched-image {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  margin: 20px auto;
+  border-radius: 8px;
+}
+
+.change-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px;
+}
+
+.change-button:hover {
+  background-color: #0056b3;
+}
+
+.logout-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #dc3545;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
