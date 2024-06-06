@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
-import './Dashboard.css';
+import "./Dashboard.css";
 
 export default function Dashboard() {
   const [email, setEmail] = useState("");
@@ -19,10 +19,18 @@ export default function Dashboard() {
   }, [navigate]);
 
   const fetchNewImage = async () => {
-    setFetchingImage(true); 
-    const apiUrl = 'https://cataas.com/cat?random=' + Math.random();
-    setImageUrl(apiUrl);
-    setFetchingImage(false); 
+    setFetchingImage(true);
+    try {
+      const response = await fetch("https://cataas.com/api/cats?limit=200");
+      const data = await response.json();
+      const randomIndex = Math.floor(Math.random() * data.length);
+      const imageUrl = "https://cataas.com/cat/" + data[randomIndex]._id;
+      setImageUrl(imageUrl);
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    } finally {
+      setFetchingImage(false);
+    }
   };
 
   useEffect(() => {
@@ -37,7 +45,7 @@ export default function Dashboard() {
   const handleLike = async () => {
     try {
       if (fetchingImage) {
-        alert('Image is still loading. Please wait and try again.');
+        alert("Image is still loading. Please wait and try again.");
         return;
       }
 
@@ -45,34 +53,45 @@ export default function Dashboard() {
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("image")) {
-        throw new Error("Fetched URL does not appear to be an image.");
-      }
       const blob = await response.blob();
       const fileName = `cat-${Date.now()}.jpg`;
-      const { data, error } = await supabase.storage.from('liked-images').upload(fileName, blob);
+      const { error } = await supabase.storage
+        .from("liked-images")
+        .upload(fileName, blob);
 
       if (error) {
         throw error;
       }
 
-      alert('Image saved successfully!');
+      alert("Image saved successfully!");
     } catch (error) {
-      console.error('Error saving image:', error);
-      alert('Failed to save image. ' + error.message);
+      console.error("Error saving image:", error);
+      alert("Failed to save image. " + error.message);
     }
   };
 
   return (
     <div className="dashboard-container">
-      <button onClick={handleLogout} className="logout-button">Logout</button>
+      <button onClick={handleLogout} className="logout-button">
+        Logout
+      </button>
       <p className="welcome-message">Welcome, {email}!</p>
-      <img src={imageUrl} alt="Fetched from API" className="fetched-image" />
-      <button onClick={fetchNewImage} className="change-button" disabled={fetchingImage}>
-        {fetchingImage ? 'Loading...' : 'Change'}
-      </button>      
-      <button onClick={handleLike} className="like-button">Like</button>
+      <img
+        src={imageUrl}
+        alt="Fetched from API"
+        className="fetched-image"
+        onLoad={() => setFetchingImage(false)}
+      />
+      <button
+        onClick={fetchNewImage}
+        className="change-button"
+        disabled={fetchingImage}
+      >
+        {fetchingImage ? "Loading..." : "Change"}
+      </button>
+      <button onClick={handleLike} className="like-button">
+        Like
+      </button>
     </div>
   );
 }
