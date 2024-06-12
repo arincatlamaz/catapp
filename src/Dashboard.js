@@ -18,24 +18,24 @@ export default function Dashboard() {
     }
   }, [navigate]);
 
-  const fetchNewImage = async () => {
+  const fetchData = async () => {
     setFetchingImage(true);
     try {
-      const response = await fetch("https://cataas.com/api/cats?limit=200");
-      const data = await response.json();
-      const randomIndex = Math.floor(Math.random() * data.length);
-      const imageUrl = "https://cataas.com/cat/" + data[randomIndex]._id;
-      setImageUrl(imageUrl);
+      const response = await fetch("https://cataas.com/cat");
+      const blob = await response.blob();
+      const objectURL = URL.createObjectURL(blob);
+      setImageUrl(objectURL);
     } catch (error) {
-      console.error("Error fetching image:", error);
+      console.log("Error fetching image:", error);
     } finally {
       setFetchingImage(false);
     }
   };
 
   useEffect(() => {
-    fetchNewImage();
+    fetchData();
   }, []);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -43,16 +43,13 @@ export default function Dashboard() {
   };
 
   const handleLike = async () => {
-    try {
-      if (fetchingImage) {
-        alert("Image is still loading. Please wait and try again.");
-        return;
-      }
+    if (fetchingImage) {
+      alert("Image is still loading. Please wait and try again.");
+      return;
+    }
 
+    try {
       const response = await fetch(imageUrl);
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
       const blob = await response.blob();
       const fileName = `cat-${Date.now()}.jpg`;
       const { error } = await supabase.storage
@@ -70,6 +67,10 @@ export default function Dashboard() {
     }
   };
 
+  const NavigateToLikes = () => {
+    navigate("/likes");
+  };
+
   return (
     <div className="dashboard-container">
       <button onClick={handleLogout} className="logout-button">
@@ -83,7 +84,7 @@ export default function Dashboard() {
         onLoad={() => setFetchingImage(false)}
       />
       <button
-        onClick={fetchNewImage}
+        onClick={fetchData}
         className="change-button"
         disabled={fetchingImage}
       >
@@ -91,6 +92,9 @@ export default function Dashboard() {
       </button>
       <button onClick={handleLike} className="like-button">
         Like
+      </button>
+      <button onClick={NavigateToLikes} className="likes-nav-button">
+        Likes
       </button>
     </div>
   );
