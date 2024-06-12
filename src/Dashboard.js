@@ -5,6 +5,7 @@ import "./Dashboard.css";
 
 export default function Dashboard() {
   const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [fetchingImage, setFetchingImage] = useState(false);
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Dashboard() {
     const user = supabase.auth.user();
     if (user) {
       setEmail(user.email);
+      setUserId(user.id);
     } else {
       navigate("/login");
     }
@@ -36,7 +38,6 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
@@ -54,7 +55,7 @@ export default function Dashboard() {
       const fileName = `cat-${Date.now()}.jpg`;
       const { error } = await supabase.storage
         .from("liked-images")
-        .upload(fileName, blob);
+        .upload(`${userId}/${fileName}`, blob);
 
       if (error) {
         throw error;

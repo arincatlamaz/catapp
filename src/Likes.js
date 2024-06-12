@@ -7,13 +7,23 @@ export default function Likes() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const user = supabase.auth.user();
+    if (user) {
+      setUserId(user.id);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const { data, error } = await supabase.storage
           .from("liked-images")
-          .list("", {
+          .list(userId, {
             limit: 100,
             offset: 0,
             sortBy: { column: "name", order: "desc" },
@@ -23,11 +33,11 @@ export default function Likes() {
 
         const imageList = await Promise.all(
           data
-            .filter(file => file.name !== ".emptyFolderPlaceholder")
-            .map(async file => {
+            .filter((file) => file.name !== ".emptyFolderPlaceholder")
+            .map(async (file) => {
               const { publicURL, error: urlError } = supabase.storage
                 .from("liked-images")
-                .getPublicUrl(file.name);
+                .getPublicUrl(`${userId}/${file.name}`);
 
               if (urlError) {
                 console.error(`Error getting public URL for ${file.name}:`, urlError);
@@ -42,7 +52,7 @@ export default function Likes() {
             })
         );
 
-        setImages(imageList.filter(image => image && image.url));
+        setImages(imageList.filter((image) => image && image.url));
       } catch (error) {
         console.error("Error fetching images:", error);
       } finally {
@@ -50,8 +60,10 @@ export default function Likes() {
       }
     };
 
-    fetchImages();
-  }, []);
+    if (userId) {
+      fetchImages();
+    }
+  }, [userId]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -65,12 +77,12 @@ export default function Likes() {
         <p>No images found</p>
       ) : (
         <div className="image-list">
-          {images.map(image => (
+          {images.map((image) => (
             <div key={image.name} className="image-item">
               <img
                 src={image.url}
                 alt={`Liked on ${image.createdAt}`}
-                onError={e => {
+                onError={(e) => {
                   console.error(`Failed to load image: ${image.url}`);
                   e.target.alt = "Image failed to load";
                 }}
